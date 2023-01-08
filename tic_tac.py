@@ -21,7 +21,7 @@ BOARD_SIZE = 3
 
 DEFAULT_PLAYERS = (
     Player(label="X", color="blue"),
-    Player(label="O", color="green"),
+    Player(label="O", color="red"),
 )
 
 
@@ -31,14 +31,14 @@ class TicTacToeGame:
         self.board_size = board_size
         self.current_player = next(self._players)
         self.winner_combo = []
-        self._current_moves = []
+        self._current_move = []
         self._has_winner = False
         self._winning_combos = []
-        self._setup_board()
+        self._set_board()
 
-    def _setup_board(self):
+    def _set_board(self):
         """Set the board to its initial state."""
-        self._current_moves = [
+        self._current_move = [
             [Move(row, col) for col in range(self.board_size)]
             for row in range(self.board_size)
         ]
@@ -47,7 +47,7 @@ class TicTacToeGame:
     def _get_winning_combos(self):
         rows = [
             [(move.row, move.col) for move in row]
-            for row in self._current_moves
+            for row in self._current_move
         ]
         columns = [list(col) for col in zip(*rows)]
         first_diagonal = [row[i] for i, row in enumerate(rows)]
@@ -57,16 +57,16 @@ class TicTacToeGame:
     def is_valid_move(self, move):
         """Return True if move is valid, and False otherwise."""
         row, col = move.row, move.col
-        move_was_not_played = self._current_moves[row][col].label == ""
+        move_was_not_played = self._current_move[row][col].label == ""
         no_winner = not self._has_winner
         return no_winner and move_was_not_played
 
     def process_move(self, move):
         """Process the current move and check if it's a win."""
         row, col = move.row, move.col
-        self._current_moves[row][col] = move
+        self._current_move[row][col] = move
         for combo in self._winning_combos:
-            results = set(self._current_moves[n][m].label for n, m in combo)
+            results = set(self._current_move[n][m].label for n, m in combo)
             is_won = (len(results) == 1) and ("" not in results)
             if is_won:
                 self._has_winner = True
@@ -81,7 +81,7 @@ class TicTacToeGame:
         """Return True if the game is tied, and False otherwise."""
         no_winner = not self._has_winner
         played_moves = (
-            move.label for row in self._current_moves for move in row
+            move.label for row in self._current_move for move in row
         )
         return no_winner and all(played_moves)
 
@@ -91,7 +91,7 @@ class TicTacToeGame:
 
     def reset_game(self):
         """Reset the game state to play again."""
-        for row, row_content in enumerate(self._current_moves):
+        for row, row_content in enumerate(self._current_move):
             for col, _ in enumerate(row_content):
                 row_content[col] = Move(row, col)
         self._has_winner = False
@@ -199,4 +199,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
